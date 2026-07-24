@@ -2,6 +2,12 @@
 
 Рабочие заметки проекта (дублируют локальную память Claude Code, чтобы контекст был доступен с любой машины).
 
+## Онлайн-просмотр (GitHub Pages, ветка gh-pages)
+
+- Редизайн: https://abdullokh-n.github.io/redesign/sakp-all-screens-redesign.html
+- Оригинал: https://abdullokh-n.github.io/redesign/sakp-all-screens-standalone.html
+- После значимых правок обновлять сайт: `git push origin main:gh-pages`
+
 ## Файлы
 
 - `sakp-all-screens-standalone.html` — **оригинал, не трогать**. Эталон для финального сравнения. 92 экрана САКП (Telegram Mini App для управления производством пластиковых изделий), дизайн-система «Промышленная точность».
