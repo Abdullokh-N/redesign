@@ -7,15 +7,25 @@
   --ground:#f4f4f6; --panel:#ffffff; --panel2:#f7f7f8;
   --ink:#1a2736; --ink2:#404b59;
   /* --muted затемнён относительно референсного #8A8C8A: тот применялся к
-     14px+ на десктопе, а здесь несёт подписи 11-13px на телефоне.
-     #6e7175 = 4.9:1 на белом (WCAG AA), оттенок сохранён. */
-  --muted:#6e7175;
+     14px+ на десктопе, здесь несёт подписи 11.5-13px на телефоне в цеху.
+     #676966 = 5.5:1 на белом, 5.0:1 на --ground, 4.7:1 на --btn-soft — AA на
+     ВСЕХ подложках, где реально стоит muted-текст (первая правка до #6e7175
+     проходила только на белом, на сером фоне давала 4.2:1).
+     Тёплая ось референса сохранена: R103 > B102. */
+  --muted:#676966;
   --line:#e6e6e8; --line2:#f0f0f2;
 
   /* бренд */
   --accent:var(--tg-theme-button-color,#9b2226); --accent-ink:var(--tg-theme-button-text-color,#ffffff);
   --accent-press:#7d1b1e; --accent-soft:#f8ebeb; --accent-line:#e7cfd0;
+  /* «спокойный» столбец графика: --accent-soft даёт 1.16:1 на белом —
+     столбцы сравнения физически не рисуются, тренд вырождается в один столбик */
+  --accent-mark:#bf8688;
   --btn-soft:#ececec; --btn-soft-press:#e0e0e0;
+  /* контур вторичной кнопки. #ECECEC на светлом фоне = 1.08:1: у кнопки нет
+     края. Референсное значение десктопное; телефону под бликом нужен контур
+     (WCAG 1.4.11 — не менее 3:1 для границ элементов управления). */
+  --btn-soft-line:#8e8f8b;
 
   /* статусы. Бренд — глухой тёмный бордо, поэтому «ошибка» намеренно взята
      ярче и холоднее: два красных не должны читаться как один смысл. */
@@ -26,8 +36,15 @@
   --bad:#d12b22; --bad-bg:#fdedec; --bad-line:#f5c9c6;
   --info:#4a5560; --info-bg:#f1f2f4; --info-line:#e2e4e7;
 
-  /* радиусы: бейдж → кнопка → строка → карточка → герой */
-  --r-xs:7px; --r-sm:10px; --r-md:14px; --r:20px; --r-lg:22px;
+  /* радиусы: бейдж → контрол → плотная поверхность → контейнер.
+     --r-lg сведён к --r: 22 и 20 — не два решения, а разнобой; в референсе
+     радиус карточки один. */
+  --r-xs:7px; --r-sm:10px; --r-md:14px; --r:20px; --r-full:999px;
+  --r-lg:var(--r);
+
+  /* шаг сетки отступов и поле страницы */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
+  --gutter:16px; --stack-gap:12px;
 
   /* высота (Madani плоский: тень — только для отрыва от фона, не «объём») */
   --shadow:0 1px 2px rgba(26,39,54,.05);
@@ -91,6 +108,20 @@
 
 :root[data-theme="light"] .v2{--accent:var(--tg-theme-button-color,#9b2226)}
 
+/* ГАРНИТУРА ДЛЯ ЭЛЕМЕНТОВ УПРАВЛЕНИЯ.
+   <button> и поля НЕ наследуют font-family: браузер задаёт им шорткат `font`
+   явно, а это сильнее наследования. Из-за этого 103 строки списка, 76 кнопок,
+   90 чипов и 25 пунктов меню рисовались системным Arial, тогда как карточки и
+   заголовки рядом — в Inter. Хуже того, в Arial нет настоящего 600: браузер
+   подделывал полужирный, а вся стратегия «мелкое компенсируем весом» держится
+   именно на нём. `font:inherit` использовать нельзя — снесёт кегли компонентов;
+   поэтому передаём только гарнитуру, трекинг и цифры. */
+.v2 button,.v2 input,.v2 select,.v2 textarea,.v2 optgroup,.v2 option,
+button,input,select,textarea{
+  font-family:var(--font-disp);letter-spacing:inherit;font-variant-numeric:inherit}
+/* кнопки-контейнеры своего веса не объявляли — их текст падал в 400 */
+.v2 .row,.v2 .tile,.icon-card,.menu-item{font-weight:500}
+
 /* ===== типографика =====
    Числа во всём приложении — табличные: с моноширинным это получалось само,
    в Inter колонки цифр иначе «пляшут» при смене значения. */
@@ -104,7 +135,12 @@
 
 /* ===== состояния (обязательные для реального приложения) ===== */
 /* фокус — глобально для новой системы */
-.v2 .app :focus-visible,.v2 .tile:focus-visible,.v2 .row:focus-visible,.v2 .tab:focus-visible,.v2 .mbtn:focus-visible,.v2 .gbtn:focus-visible,.v2 .search input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* Общая ветка была написана как `.v2 .app :focus-visible`, но .app в разметке
+   нет ни разу — работал только явный список из пяти компонентов, а самый
+   массовый контрол (.filter-chip, 90 шт.) оставался невидим для клавиатуры и
+   для Bluetooth-сканера, который таб-ом ходит по полям (экран otk-bt).
+   3px, а не 2px: лишний пиксель — ровно на перчатки и блики. */
+.v2 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 /* тач-цели */
 .v2 .row,.v2 .tile,.v2 .tab,.v2 .mbtn,.v2 .gbtn,.v2 .ib{min-height:44px}
 /* пустое состояние */
@@ -117,6 +153,32 @@
 
 /* ===== app chrome: обёртка, шапка, тело, ярлык секции ===== */
 /* min-height: 100vh/100dvh — в макете было 540px (высота демо-карточки телефона), здесь — реальная высота вьюпорта */
+/* ПОЛЕ СТРАНИЦЫ И ВЕРТИКАЛЬНЫЙ РИТМ — единственный источник.
+   Экраны монтируются как <div class="scr"><div class="v2">…, а поле задавали
+   .v2 .body / #app / .main — этих обёрток в разметке нет НИ РАЗУ, поэтому
+   вычисленный отступ корня был 0px: карточки, сетки и главные кнопки упирались
+   в рамку телефона, а радиус 20px срезался её собственным скруглением. Именно
+   отсюда ощущение «не как в референсе»: макет Madani построен на щедрых полях.
+   `*{margin:0}` из легаси заодно убирал любые зазоры между блоками — ритм
+   задаём gap-ом на корне. `.v2 .v2{padding:0}` обязателен: в реальном
+   приложении .v2 висит на <body>, а вложенные острова иначе удвоят отступ. */
+.scr > .v2, body.v2{
+  padding:var(--gutter) var(--gutter) calc(var(--gutter) + var(--sp-2) + var(--safe-b));
+  display:flex;flex-direction:column;gap:var(--stack-gap)}
+.v2 .v2{padding:0}
+.scr > .v2 > *{margin-top:0;margin-bottom:0}
+.v2 .card,.v2 .page-title,.v2 .page-desc,.v2 .form-group{margin-bottom:0}
+.v2 .form-group{display:flex;flex-direction:column;gap:var(--sp-2)}
+.v2 .form-label{margin-bottom:0}
+/* сетки отдают часть внутреннего поля: после появления гутера колонка сузилась
+   с 145px до 128px, и 24px/800 в .stt начинало переноситься */
+.v2 .tiles,.v2 .stat2,.icon-grid,.tile-grid,.stock-grid,.op-hero-grid{gap:var(--stack-gap)}
+.v2 .tile,.v2 .stt{padding:var(--sp-3);min-width:0}
+.icon-card{padding:14px 10px;min-width:0}
+/* горизонтальная лента обязана выходить ЗА поле, иначе скроллер обрывается
+   раньше края экрана и читается как сломанная вёрстка */
+.cat-tabs{margin-inline:calc(-1 * var(--gutter));padding-inline:var(--gutter);scroll-padding-inline:var(--gutter)}
+
 .v2 .app{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;background:var(--ground)}
 .v2 .hdr{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
 .v2 .hdr .ib{width:40px;height:40px;flex:none;border:1px solid var(--line);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:var(--ink2);font-size:16px;background:var(--panel)}
@@ -126,7 +188,10 @@
 .v2 .body{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1}
 /* ярлык секции: в референсе разделы объявляются набранным заголовком, а не
    мелким шёпотом — поднят до 12px/700 и до цвета ink2, с бордовой засечкой. */
-.v2 .sec-lbl{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin:2px 0 -2px}
+/* ярлык обязан липнуть к тому, что ОБЪЯВЛЯЕТ: сверху воздух, снизу — почти
+   вплотную. Отрицательный margin вычитается из известного gap (12px). */
+.v2 .sec-lbl{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin:var(--sp-2) 0 -4px}
+.v2 .sec-lbl:first-child{margin-top:0}
 .v2 .sec-lbl::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--accent);flex:none}
 
 /* ===== карточки / базовые компоненты ===== */
@@ -185,7 +250,8 @@
    заявку»), а обесцвеченная ✅ схлопывается в невнятный силуэт-квадрат.
    Подпись самодостаточна, а ярлык секции уже помечен бордовой засечкой. */
 .v2 .mbtn .e,.v2 .gbtn .e,.btn .e,.filter-chip .e,.chip.selected .e,
-.v2 .sec-lbl .e,.page-title .e,.v2 .hdr .e,.v2 .tab .e{display:none}
+.v2 .sec-lbl .e,.page-title .e,.v2 .hdr .e,.v2 .tab .e,
+.form-label .e,.op-id .nm .e{display:none}
 
 /* Иконка-одиночка обязана остаться видимой: скрывать её нечем заменить */
 .e.solo{display:inline-block}
@@ -229,9 +295,8 @@
 .v2 .mbtn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:15px;min-height:52px;padding:14px 28px;border-radius:var(--r-sm);border:none;width:100%;letter-spacing:-.005em;transition:background .15s}
 .v2 .mbtn:active{background:var(--accent-press)}
 .v2 .mbtn .tag{font-size:var(--fs-micro);opacity:.85;font-weight:600}
-.v2 .gbtn{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--btn-soft);color:var(--ink);font-weight:600;font-size:var(--fs-sm);min-height:46px;padding:12px 18px;border-radius:var(--r-sm);border:1px solid transparent;transition:background .15s}
+.v2 .gbtn{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--btn-soft);color:var(--ink);font-weight:600;font-size:var(--fs-sm);min-height:48px;padding:12px 18px;border-radius:var(--r-sm);border:1px solid var(--btn-soft-line);transition:background .15s}
 .v2 .gbtn:active{background:var(--btn-soft-press)}
-.v2 .gbtn.focus{outline:2px solid var(--accent);outline-offset:2px}
 /* деструктив: экраны задают его инлайном через color/border-color: var(--bad) —
    добиваем фон, чтобы красный текст не лежал на сером и не терял контраст. */
 .v2 .gbtn[style*="--bad"]{background:var(--panel);border-color:var(--bad-line)!important}
@@ -259,7 +324,10 @@
    строку и наезжали на число справа (8 экранов). Переводим в блочную колонку. */
 .v2 .row .main{display:flex;flex-direction:column;justify-content:center;gap:2px;flex:1;min-width:0;padding:0;max-width:none;width:auto;margin:0}
 .v2 .row .t{display:block;font-weight:600;font-size:var(--fs-sm);line-height:1.35;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v2 .row .s{display:block;font-size:12px;color:var(--muted);line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* nowrap обязателен вместе с ellipsis: без него подпись переносится на вторую
+   строку, высота строк списка становится рваной, а число справа повисает
+   напротив пустоты. Лучше усечь хвост, чем разломать ритм списка. */
+.v2 .row .s{display:block;font-size:12px;color:var(--muted);line-height:1.3;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v2 .row .q{flex:none;font-weight:800;font-size:15px;text-align:right;white-space:nowrap;letter-spacing:-.01em}
 .v2 .row .q .u{font-size:11px;color:var(--muted);font-weight:600;margin-left:2px}
 .v2 .row .chev{color:var(--muted);font-size:16px;flex:none;line-height:1}
@@ -299,7 +367,7 @@
 /* подписи вынесены под столбцы абсолютом — резервируем под них место снизу,
    иначе они наезжали на следующий блок (экраны director/analytics). */
 .v2 .bars{display:flex;align-items:flex-end;gap:6px;height:60px;padding-top:6px;margin-bottom:20px}
-.v2 .bars .b{flex:1;background:var(--accent-soft);border-radius:5px 5px 0 0;position:relative;min-height:6px}
+.v2 .bars .b{flex:1;background:var(--accent-mark);border-radius:5px 5px 0 0;position:relative;min-height:6px}
 .v2 .bars .b.hi{background:var(--accent)}
 .v2 .bars .b span{position:absolute;bottom:-18px;left:-4px;right:-4px;text-align:center;font-size:var(--fs-micro);font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
@@ -314,24 +382,27 @@
 @keyframes sh{to{background-position:-200% 0}}
 
 /* ===== styles.css (legacy classes used by .v2 screens; light) ===== */
+/* Легаси-имена — ПСЕВДОНИМЫ токенов, а не вторая палитра.
+   Этот блок объявлен ниже токенов при той же специфичности, поэтому выигрывал
+   у них КАЖДОЕ имя. Значения были синхронизированы вручную и уже разъехались:
+   --shadow здесь перебивал токен и рисовал на .card/.tile чисто чёрную тень,
+   тогда как .menu-item/.icon-card использовали тень «в чернилах» — два разных
+   языка теней на расстоянии 200px в каждом меню роли.
+   --accent и --shadow удалены: одноимённые токены объявлены выше. */
 :root {
-  --bg: var(--tg-theme-bg-color, #f4f4f6);
-  --text: var(--tg-theme-text-color, #1a2736);
-  /* --hint правит 31 .list-meta, .page-desc, .stat-label, .ship-meta и др.
-     Референсный #8A8C8A давал 3.3:1 — ниже порога AA для мелкого кегля. */
-  --hint: var(--tg-theme-hint-color, #6e7175);
-  --link: var(--tg-theme-link-color, #9b2226);
-  --btn: var(--tg-theme-button-color, #9b2226);
-  --btn-text: var(--tg-theme-button-text-color, #ffffff);
-  --secondary: var(--tg-theme-secondary-bg-color, #ffffff);
-  --accent: #9b2226;
-  --border: #e6e6e8;
-  --danger: #d12b22;
-  --success: #15703c;
-  --warning: #8a5a00;
-  --radius: 14px;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: var(--tg-theme-bg-color, var(--ground));
+  --text: var(--tg-theme-text-color, var(--ink));
+  --hint: var(--tg-theme-hint-color, var(--muted));
+  --link: var(--tg-theme-link-color, var(--accent));
+  --btn: var(--accent);
+  --btn-text: var(--accent-ink);
+  --secondary: var(--tg-theme-secondary-bg-color, var(--panel));
+  --border: var(--line);
+  --danger: var(--bad);
+  --success: var(--ok);
+  --warning: var(--warn);
+  --radius: var(--r-md);
+  --safe-bottom: var(--safe-b);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -674,13 +745,17 @@ body { overflow-x: hidden; }
 .form-input[type="date"], .form-input[type="time"] { padding-left: 11px; padding-right: 9px; font-size: 0.95rem; }
 .form-input[type="date"], .form-input[type="time"], .form-input[type="number"] { font-variant-numeric: tabular-nums; }
 
+/* Свечение rgba(155,34,38,.14) на белом поле = 1.17:1 — это не индикатор
+   (WCAG 1.4.11/2.4.13 требуют 3:1 и толщину от 2px). Возвращаем настоящий
+   контур. Именно :focus, а не :focus-visible: фокус приходит и от
+   Bluetooth-сканера, и от скринридера, а не только с клавиатуры. */
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
-  outline: none;
-  border-color: var(--link);
-  /* было синее свечение из старой палитры — теперь фирменное бордовое */
-  box-shadow: 0 0 0 3px rgba(155, 34, 38, 0.14);
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
+  box-shadow: none;
 }
 
 .form-input.error { border-color: var(--danger); }
