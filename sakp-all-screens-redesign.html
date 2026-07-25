@@ -265,8 +265,11 @@ button,input,select,textarea{
   background-repeat:no-repeat;background-position:right bottom;background-size:118% auto}
 
 .v2 .hero{background-color:var(--accent);color:#fff;border:none;border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow-brand);position:relative;overflow:hidden}
-.v2 .hero .k{font-size:var(--fs-micro);font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.85)}
-.v2 .hero .v{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1;margin-top:5px}
+.v2 .hero .k{font-size:var(--fs-micro);font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.88)}
+/* Главное число экрана набрано по-настоящему крупно: в референсе дисплейный
+   кегль — 52px, и именно масштабный контраст создаёт характер. Здесь 34px
+   при ширине 320px даёт тот же эффект, не ломая строку. */
+.v2 .hero .v{font-size:34px;font-weight:900;letter-spacing:-.03em;line-height:1.05;margin-top:6px}
 .v2 .hero .meta{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 /* чипы внутри героя живут на цветном фоне — своя, «стеклянная» шкура */
 .v2 .hero .chip{background:rgba(255,255,255,.18)!important;color:#fff!important;border-color:rgba(255,255,255,.28)!important}
@@ -590,11 +593,22 @@ body { overflow-x: hidden; }
 
 /* Typography — шкала Inter: заголовок экрана ExtraBold, как в референсе */
 .page-title {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: -0.015em;
-  line-height: 1.3;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
   margin-bottom: 6px;
+}
+/* Иконка остаётся В СТРОКЕ с текстом: при flex-раскладке она отрывалась на
+   отдельную строку, как только заголовок переносился. */
+.page-title .sicon { width: 20px; height: 20px; vertical-align: -0.16em; margin-right: 7px; }
+/* Фирменная засечка над заголовком экрана — короткий бордовый штрих.
+   Один и тот же знак на всех 92 экранах: узнаваемость строится на повторении
+   простого элемента, а не на украшении каждого экрана по отдельности. */
+.scr > .v2 > .page-title:first-child::before,
+.v2 .stack > .page-title:first-child::before {
+  content: ""; display: block; width: 34px; height: 4px;
+  border-radius: 2px; background: var(--accent); margin-bottom: 11px;
 }
 /* приём Madani: часть заголовка выделена фирменным цветом */
 .page-title em, .page-title .hl { font-style: normal; color: var(--accent); }
