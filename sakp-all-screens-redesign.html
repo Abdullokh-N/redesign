@@ -261,6 +261,34 @@ button,input,select,textarea{
    вплотную. Отрицательный margin вычитается из известного gap (12px). */
 .v2 .sec-lbl{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);margin:var(--sp-2) 0 -4px}
 .v2 .sec-lbl:first-child{margin-top:0}
+
+/* ЗАГОЛОВОК ЭКРАНА ИЗ ЯРЛЫКА.
+   30 экранов из 92 не имеют .page-title вовсе: их название набрано .sec-lbl —
+   микро-ярлыком 12px капсом. Из-за этого карточка отчёта была НАБРАНА МЕЛЬЧЕ,
+   чем строка списка, которая её открыла. Если ярлык стоит первым на экране и
+   заголовка нет, он и есть заголовок — набираем его как заголовок и даём тот же
+   фирменный знак. Ярлыки внутри экрана (после шапки, между секциями) не
+   затрагиваются: они не :first-child. */
+.scr > .v2:not(:has(.page-title)) > .sec-lbl:first-child,
+.scr > .v2:not(:has(.page-title)) > .v2 > .sec-lbl:first-child,
+.scr > .v2:not(:has(.page-title)) > .v2.stack > .sec-lbl:first-child{
+  display:block;font-size:1.35rem;font-weight:800;letter-spacing:-.02em;
+  line-height:1.25;text-transform:none;color:var(--ink);margin:0}
+.scr > .v2:not(:has(.page-title)) > .sec-lbl:first-child::before,
+.scr > .v2:not(:has(.page-title)) > .v2 > .sec-lbl:first-child::before,
+.scr > .v2:not(:has(.page-title)) > .v2.stack > .sec-lbl:first-child::before{
+  content:"";display:block;width:34px;height:4px;border-radius:2px;
+  background:var(--accent);margin:0 0 11px}
+.scr > .v2:not(:has(.page-title)) > .sec-lbl:first-child .sicon,
+.scr > .v2:not(:has(.page-title)) > .v2 > .sec-lbl:first-child .sicon,
+.scr > .v2:not(:has(.page-title)) > .v2.stack > .sec-lbl:first-child .sicon{
+  width:20px;height:20px;vertical-align:-.16em;margin-right:7px;color:var(--ink)}
+
+/* Неактивная кнопка не имела состояния вовсе: `disabled` красилась полным
+   фирменным бордо и читалась как доступное действие. */
+.v2 button:disabled,.v2 .mbtn:disabled,.v2 .gbtn:disabled,.btn:disabled{
+  opacity:.42;cursor:not-allowed;box-shadow:none}
+.v2 .mbtn:disabled:active{background:var(--accent)}
 .v2 .sec-lbl::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--accent);flex:none}
 
 /* ===== карточки / базовые компоненты ===== */
