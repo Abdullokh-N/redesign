@@ -346,16 +346,26 @@ button,input,select,textarea{
    кнопка не может стать меньше своего текста и вместо этого переносится. */
 .v2 div[style*="display:flex"]:not([style*="column"]) > .gbtn,
 .v2 div[style*="display:flex"]:not([style*="column"]) > .mbtn{flex:1 1 auto;min-width:max-content;max-width:100%}
+/* Кнопка, которой разметка явно задала width:auto (отправка сообщения, корзина),
+   стоит рядом с полем ввода: она обязана остаться по содержимому, иначе делит
+   строку поровну и сминает поле — «Сообщение» обрезалось до «Сообщени». */
+.v2 div[style*="display:flex"] > .mbtn[style*="width:auto"],
+.v2 div[style*="display:flex"] > .gbtn[style*="width:auto"]{flex:0 0 auto;max-width:none}
 .v2 .gbtn{padding:12px 14px}
 /* Полноширинная .gbtn в вертикальном стеке — это СТРОКА МЕНЮ, а не кнопка:
    центрирование оставляло подпись висеть посередине, пока счётчик прижимался
    к правому краю (экран warehouse — «тексты разбросаны»).
    Центр остаётся за .mbtn: там это главное действие экрана. */
-.scr > .v2 > .gbtn,.v2 .v2 > .gbtn,.v2 .stack > .gbtn,
-.v2 div[style*="flex-direction:column"] > .gbtn{
+/* Признак строки меню — она стоит В РЯДУ таких же (две и более подряд) либо
+   несёт счётчик. Одиночная вторичная кнопка («На главный экран») остаётся
+   действием и центрируется: иначе лишний элемент выглядит как обрезанный
+   список из одного пункта. */
+.v2 .gbtn:has(+ .gbtn),.v2 .gbtn + .gbtn,.v2 .gbtn:has(.badge-count){
   justify-content:flex-start;text-align:left;gap:11px;padding-left:15px;padding-right:15px}
-.scr > .v2 > .gbtn .badge-count,.v2 .v2 > .gbtn .badge-count,.v2 .stack > .gbtn .badge-count,
-.v2 div[style*="flex-direction:column"] > .gbtn .badge-count{margin-left:auto}
+.v2 .gbtn .badge-count{margin-left:auto}
+/* в горизонтальной группе соседство кнопок ничего не значит — там это пара действий */
+.v2 div[style*="display:flex"]:not([style*="column"]) > .gbtn,
+.v2 .btn-group > .gbtn,.v2 .filters > .gbtn{justify-content:center;text-align:center;padding-left:14px;padding-right:14px}
 /* На залитой поверхности смысловой тон иконки отменяется: зелёная галочка на
    бордовой кнопке — это не «успех», а провал контраста. Иконка обязана быть
    одного цвета с подписью, иначе кнопка распадается на две части. */
@@ -1102,6 +1112,9 @@ body { overflow-x: hidden; }
 }
 
 .filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   padding: 10px 14px;
   /* было 20px «пилюлей» — референс использует умеренный радиус */
   border-radius: 10px;
@@ -1370,16 +1383,18 @@ body.has-tabbar #main { padding-bottom: 88px; }
 .wizard-body > *:last-child { margin-bottom: 0; }
 
 /* Нативный выбор файла — под тему (вместо белой кнопки «Выберите файл») */
-.form-input[type="file"] { padding: 8px 10px; line-height: 1.7; }
+/* нативный выбор файла: имя файла обрезалось до «Фа…ан» — уменьшаем кегль
+   подписи и кнопку, чтобы в 236px помещалось и то и другое */
+.form-input[type="file"] { padding: 9px 10px; line-height: 1.6; font-size: 0.82rem; }
 .form-input[type="file"]::file-selector-button {
   background: var(--btn);
   color: var(--btn-text);
   border: none;
   border-radius: 8px;
-  padding: 9px 14px;
-  margin-right: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  padding: 8px 12px;
+  margin-right: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
 }
 .form-input[type="file"]::-webkit-file-upload-button {
@@ -1387,10 +1402,10 @@ body.has-tabbar #main { padding-bottom: 88px; }
   color: var(--btn-text);
   border: none;
   border-radius: 8px;
-  padding: 9px 14px;
-  margin-right: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  padding: 8px 12px;
+  margin-right: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
