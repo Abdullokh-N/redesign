@@ -52,7 +52,7 @@
 
   /* шаг сетки отступов и поле страницы */
   --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
-  --gutter:12px; --stack-gap:12px;
+  --gutter:8px; --stack-gap:12px;
 
   /* высота (Madani плоский: тень — только для отрыва от фона, не «объём») */
   --shadow:0 1px 2px rgba(26,39,54,.05);
@@ -82,7 +82,7 @@
    • статусные цвета подняты по светлоте: на тёмном тёмно-зелёный не работает.
    Telegram передаёт тему приложения — Mini App обязан отрабатывать обе. */
 body.theme-dark,
-body:has(#theme-toggle:checked){
+body:is(:has(#theme-toggle:checked),.theme-dark){
   --ground:#131519; --panel:#1b1e23; --panel2:#23272e;
   --ink:#f1f2f4; --ink2:#c6cad0; --muted:#9ba1a8;
   --line:#2c3036; --line2:#23272e;
@@ -1551,7 +1551,7 @@ body.has-tabbar #main { padding-bottom: 88px; }
   .phone > .cap .cap-rid { color:#8d9199; font-weight:500; }
   .phone[data-status="error"] > .cap { color:#c02418; }
   .device {
-    border:1px solid #dededf; background:#fff; border-radius:21px; padding:3px;
+    border:1px solid #dededf; background:#fff; border-radius:19px; padding:1px;
     box-shadow:0 1px 2px rgba(26,39,54,.05), 0 12px 32px rgba(26,39,54,.10);
   }
   .phone[data-status="error"] .device { outline:3px solid #c22c27; outline-offset:2px; }
@@ -1579,22 +1579,22 @@ body.has-tabbar #main { padding-bottom: 88px; }
   .theme-switch input:focus-visible + .track { outline:3px solid #9b2226; outline-offset:3px; }
 
   /* ---- тёмная витрина ---- */
-  body:has(#theme-toggle:checked) { background:#0d0f12; }
-  body:has(#theme-toggle:checked) .board > h1 { color:#f1f2f4; }
-  body:has(#theme-toggle:checked) .board > h1 .hl { color:#e0787e; }
-  body:has(#theme-toggle:checked) .board > .sub { color:#9ba1a8; }
-  body:has(#theme-toggle:checked) .theme-switch { color:#c6cad0; }
-  body:has(#theme-toggle:checked) .theme-switch .track { background:#333840; }
-  body:has(#theme-toggle:checked) .theme-switch input:checked + .track { background:#c3323a; }
-  body:has(#theme-toggle:checked) #status-line { background:#1b1e23; border-color:#2c3036; color:#4ac07a; }
-  body:has(#theme-toggle:checked) #status-line::before { background:#4ac07a; }
-  body:has(#theme-toggle:checked) .section-title { color:#f1f2f4; border-top-color:#2c3036; }
-  body:has(#theme-toggle:checked) .section-sub { color:#9ba1a8; }
-  body:has(#theme-toggle:checked) .phone > .cap { color:#c6cad0; }
-  body:has(#theme-toggle:checked) .phone > .cap .cap-rid { color:#7d838b; }
-  body:has(#theme-toggle:checked) .device { background:#1b1e23; border-color:#2c3036;
+  body:is(:has(#theme-toggle:checked),.theme-dark) { background:#0d0f12; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .board > h1 { color:#f1f2f4; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .board > h1 .hl { color:#e0787e; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .board > .sub { color:#9ba1a8; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .theme-switch { color:#c6cad0; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .theme-switch .track { background:#333840; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .theme-switch input:checked + .track { background:#c3323a; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) #status-line { background:#1b1e23; border-color:#2c3036; color:#4ac07a; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) #status-line::before { background:#4ac07a; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .section-title { color:#f1f2f4; border-top-color:#2c3036; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .section-sub { color:#9ba1a8; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .phone > .cap { color:#c6cad0; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .phone > .cap .cap-rid { color:#7d838b; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .device { background:#1b1e23; border-color:#2c3036;
     box-shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 36px rgba(0,0,0,.45); }
-  body:has(#theme-toggle:checked) .scr { background:#131519; border-color:#2c3036; }
+  body:is(:has(#theme-toggle:checked),.theme-dark) .scr { background:#131519; border-color:#2c3036; }
 
   .frame-error {
     padding:14px; font-family:ui-monospace,Consolas,monospace; font-size:11.5px; color:#c22c27;
