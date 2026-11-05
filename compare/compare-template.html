@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сравнение редизайна САКП</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f4f6; --panel:#fff; --ink:#1a2736; --muted:#5d6876; --line:#e2e5ea; --soft:#eef0f3;
+  --p:#c8241c; --p-bg:#fdecea; --c:#a85d06; --c-bg:#fdf1dc; --i:#2457c5; --i-bg:#e8effd; --ok:#177a3c; --ok-bg:#e6f5ec;
+  --brand:#9b2226;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+button,input{font:inherit;color:inherit}
+code{font:12px/1.3 ui-monospace,Consolas,monospace;background:var(--soft);padding:1px 5px;border-radius:4px}
+#app{display:grid;grid-template-columns:300px minmax(0,1fr);height:100vh}
+
+/* ── боковая панель ── */
+#side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.side-head{padding:16px 16px 12px;border-bottom:1px solid var(--line)}
+.side-head h1{font-size:15px;line-height:1.25;margin:0 0 4px;font-weight:800}
+.side-head h1 span{color:var(--brand)}
+.side-head a{display:inline-block;margin-top:6px;font-size:13px;color:var(--i);text-decoration:none;font-weight:600;cursor:pointer}
+.filters{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px 8px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip:hover{border-color:#c5cad2}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip i{font-style:normal;opacity:.7;font-variant-numeric:tabular-nums}
+.search{margin:4px 16px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:calc(100% - 32px)}
+#list{overflow:auto;padding:0 8px 24px;flex:1}
+.grp{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:14px 8px 4px}
+.it{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:6px;align-items:center;width:100%;text-align:left;border:0;background:none;padding:6px 8px;border-radius:8px;cursor:pointer}
+.it:hover{background:var(--soft)}
+.it[aria-current="true"]{background:var(--ink);color:#fff}
+.it .n{font-variant-numeric:tabular-nums;font-weight:700;color:var(--muted);font-size:12px}
+.it[aria-current="true"] .n{color:#b9c3cf}
+.it .t{font-size:13px;line-height:1.3}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:10px;font-size:11px;font-weight:700;padding:0 6px;font-variant-numeric:tabular-nums}
+.b-p{background:var(--p);color:#fff}.b-c{background:var(--c-bg);color:var(--c)}.b-ok{background:var(--ok-bg);color:var(--ok)}
+
+/* ── основная область ── */
+#main{overflow:auto;min-width:0;position:relative}
+.wrap{max-width:1320px;margin:0 auto;padding:24px 28px 64px}
+#loading{position:fixed;inset:0;background:var(--bg);z-index:50;display:grid;place-items:center;text-align:center;color:var(--muted)}
+#loading b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+
+/* сводка */
+#summary h2{font-size:26px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em}
+#summary h3{font-size:17px;font-weight:800;margin:32px 0 10px}
+.lead{color:var(--muted);margin:0 0 18px;max-width:900px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer;text-align:left}
+.stat:hover{border-color:#c5cad2}
+.stat b{display:block;font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{color:var(--muted);font-size:13px}
+.stat.p b{color:var(--p)}.stat.c b{color:var(--c)}.stat.ok b{color:var(--ok)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+.checks{list-style:none;margin:0;padding:0}
+.checks li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:7px 0;border-bottom:1px solid var(--soft)}
+.checks li:last-child{border-bottom:0}
+.ok-i{color:var(--ok);font-weight:800}.bad-i{color:var(--p);font-weight:800}.warn-i{color:var(--c);font-weight:800}
+.type{border-left:4px solid var(--line)}
+.type.sev-problem{border-left-color:var(--p)}.type.sev-check{border-left-color:#e2a03a}.type.sev-info{border-left-color:var(--i)}
+.type h4{margin:0 0 4px;font-size:15px}
+.type p{margin:0 0 10px;color:var(--muted)}
+.sc-links{display:flex;flex-wrap:wrap;gap:6px}
+.sc-link{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:4px 9px;font-size:12px;cursor:pointer;text-align:left}
+.sc-link:hover{border-color:var(--ink)}
+.sc-link b{font-variant-numeric:tabular-nums}
+table.map{border-collapse:collapse;width:100%;font-size:13px}
+table.map td{padding:6px 8px;border-bottom:1px solid var(--soft);vertical-align:middle}
+table.map td:first-child{width:44px;font-size:18px;text-align:center}
+
+/* экран */
+.scr-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.crumbs{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.scr-head h2{font-size:22px;line-height:1.25;font-weight:800;margin:4px 0 4px}
+.scr-head h2 .num{color:var(--brand);font-variant-numeric:tabular-nums;margin-right:8px}
+.scr-head .rid{color:var(--muted);font-size:13px}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:13px}
+.btn:hover:not(:disabled){border-color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default}
+.scr-body{display:grid;grid-template-columns:auto auto minmax(300px,1fr);gap:20px;align-items:start}
+figure{margin:0}
+figcaption{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:22px}
+figcaption label{text-transform:none;letter-spacing:0;font-weight:600;display:inline-flex;gap:6px;align-items:center;cursor:pointer;color:var(--ink)}
+.fwrap{background:#dfe3e8;border-radius:22px;padding:10px}
+iframe.fr{display:block;border:0;width:328px;height:600px;background:transparent}
+iframe.fr.analyzing{position:fixed;left:0;top:0;width:1600px;height:1400px;opacity:0;pointer-events:none}
+.diffs{min-width:0}
+.dsec{margin:0 0 16px}
+.dsec > h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;display:flex;gap:8px;align-items:center}
+.dsec.sev-problem > h3{color:var(--p)}.dsec.sev-check > h3{color:var(--c)}.dsec.sev-info > h3{color:var(--i)}
+.d{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.d .mk{width:24px;height:24px;border-radius:12px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:var(--muted)}
+.sev-problem .d .mk{background:var(--p)}.sev-check .d .mk{background:#d48410}.sev-info .d .mk{background:var(--i)}
+.d .mk.none{background:transparent;border:2px solid var(--line)}
+.d:hover{border-color:#c5cad2}
+.dt{font-weight:700;margin-bottom:3px}
+.dd{color:var(--muted);font-size:13px}
+.dd .q{color:var(--ink)}
+.cut{background:var(--p-bg);color:var(--p);text-decoration:line-through;text-decoration-thickness:1px;border-radius:3px}
+.ba{display:grid;grid-template-columns:52px minmax(0,1fr);gap:2px 8px;margin-top:6px;font-size:13px}
+.ba > span:nth-child(odd){color:var(--muted);font-size:12px;padding-top:1px}
+.ba > span:nth-child(even){color:var(--ink)}
+.empty{background:var(--ok-bg);color:var(--ok);border-radius:12px;padding:12px 14px;font-weight:600}
+.g{font-size:16px;line-height:1}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
+.dotx{display:inline-block;width:10px;height:10px;border-radius:50%;background:#8a8c8a;vertical-align:0}
+.dotx.ok{background:#1f9d55}.dotx.bad{background:#d12b22}.dotx.warn{background:#d9910b}.dotx.info{background:#2f6fb0}
+.reps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.rep{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+.rep .arr{color:var(--muted)}
+.rep .cnt{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:0 0 14px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend i{width:14px;height:14px;border-radius:4px;border:2px solid;display:inline-block}
+.warnbox{background:var(--c-bg);color:#6b3d03;border-radius:12px;padding:10px 14px;margin:12px 0;font-size:13px}
+[hidden]{display:none!important}
+
+@media (max-width:1180px){ .scr-body{grid-template-columns:auto auto} .diffs{grid-column:1 / -1} }
+@media (max-width:900px){
+  #app{grid-template-columns:1fr;height:auto}
+  #side{max-height:46vh;border-right:0;border-bottom:1px solid var(--line)}
+  #main{overflow:visible}
+  .wrap{padding:16px}
+  .scr-body{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+</head>
+<body>
+<div id="loading"><div><b>Сравниваю 92 экрана…</b>Оба борда загружаются и сверяются прямо в браузере, это занимает несколько секунд.</div></div>
+<div id="app">
+  <aside id="side">
+    <div class="side-head">
+      <h1>Сравнение редизайна <span>САКП</span></h1>
+      <a id="to-summary">← Сводка различий</a>
+    </div>
+    <div class="filters" id="filters"></div>
+    <input class="search" id="q" type="search" placeholder="Поиск по номеру или названию">
+    <nav id="list" aria-label="Экраны"></nav>
+  </aside>
+  <main id="main">
+    <div class="wrap">
+      <section id="summary" hidden></section>
+      <section id="screen">
+        <div class="scr-head">
+          <div>
+            <div class="crumbs" id="s-sec"></div>
+            <h2><span class="num" id="s-num"></span><span id="s-name"></span></h2>
+            <div class="rid">код экрана <code id="s-rid"></code> · <span id="s-of"></span></div>
+          </div>
+          <div class="nav">
+            <button class="btn" id="prev">← Предыдущий</button>
+            <button class="btn" id="next">Следующий →</button>
+          </div>
+        </div>
+        <div class="legend"><span><i style="border-color:#d12b22"></i>красная рамка — проблема</span><span><i style="border-color:#d97706"></i>жёлтая — проверить</span><span>номер на рамке = номер пункта в списке справа · стрелки ← → листают экраны</span></div>
+        <div class="scr-body">
+          <figure><figcaption>Было · оригинал</figcaption><div class="fwrap"><iframe class="fr analyzing" id="frameO" title="Оригинал"></iframe></div></figure>
+          <figure><figcaption>Стало · редизайн <label><input type="checkbox" id="dark"> тёмная тема</label></figcaption><div class="fwrap"><iframe class="fr analyzing" id="frameR" title="Редизайн"></iframe></div></figure>
+          <div class="diffs" id="diffs"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+const ORIG_HTML = /*__ORIG__*/"";
+const RED_HTML = /*__RED__*/"";
+</script>
+<script>
+(async () => {
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(9)) { if (c == null || c === false) continue; e.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return e;
+}
+
+// ── нормализация ──────────────────────────────────────────────────────────────
+const GL = /[\u{1F1E6}-\u{1F1FF}]{2}|\p{Extended_Pictographic}(?:️)?(?:‍\p{Extended_Pictographic}(?:️)?)*|[\p{So}›＋]/gu;
+const STRIP = /[\p{So}\p{Extended_Pictographic}‍️⃣›＋]/gu;
+const txtNorm = (s) => (s || '').replace(STRIP, ' ').replace(/(^|\s)\?(?=\s|$)/g, ' ').replace(/\s+/g, ' ').trim();
+const keyNorm = (s) => (s || '').replace(STRIP, '').replace(/[?\s]/g, '');
+const short = (s, n = 70) => { s = txtNorm(s); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+
+const lcs = (a, b) => {
+  const n = a.length, m = b.length, dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const ops = []; let i = 0, j = 0;
+  while (i < n && j < m) { if (a[i] === b[j]) { ops.push(['=', a[i]]); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) ops.push(['-', a[i++]]); else ops.push(['+', b[j++]]); }
+  while (i < n) ops.push(['-', a[i++]]); while (j < m) ops.push(['+', b[j++]]);
+  const hunks = []; let cur = null;
+  ops.forEach((o, k) => { if (o[0] === '=') { cur = null; return; } if (!cur) { cur = { del: [], add: [], ctx: ops.slice(Math.max(0, k - 5), k).filter((x) => x[0] !== '+').map((x) => x[1]).join(' ') }; hunks.push(cur); } (o[0] === '-' ? cur.del : cur.add).push(o[1]); });
+  return hunks;
+};
+const msDiff = (a, b) => {
+  const c = new Map(); a.forEach((x) => c.set(x, (c.get(x) || 0) + 1)); b.forEach((x) => c.set(x, (c.get(x) || 0) - 1));
+  const rem = [], add = []; for (const [k, v] of c) { for (let i = 0; i < v; i++) rem.push(k); for (let i = 0; i < -v; i++) add.push(k); }
+  return { rem, add };
+};
+
+// ── загрузка бордов ───────────────────────────────────────────────────────────
+const fO = $('#frameO'), fR = $('#frameR');
+const load = (f, html) => new Promise((res) => { f.addEventListener('load', () => res(f.contentDocument), { once: true }); f.srcdoc = html; });
+const [dO, dR] = await Promise.all([load(fO, ORIG_HTML), load(fR, RED_HTML)]);
+try { await Promise.race([dR.fonts.ready, sleep(8000)]); } catch (e) {}
+await sleep(500);
+const FONT_OK = (() => { try { return dR.fonts.check('600 14px Inter'); } catch (e) { return true; } })();
+
+// спрайт иконок редизайна — в эту страницу, чтобы показывать настоящие иконки
+const sprite = dR.body.querySelector(':scope > svg');
+if (sprite) { const c = document.importNode(sprite, true); c.setAttribute('aria-hidden', 'true'); c.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden'; document.body.prepend(c); }
+const icon = (id) => { const ns = 'http://www.w3.org/2000/svg'; const s = document.createElementNS(ns, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('class', 'ic'); const u = document.createElementNS(ns, 'use'); u.setAttribute('href', '#' + id); s.appendChild(u); return s; };
+const glyph = (g) => h('span', { class: 'g' }, g);
+const markView = (m) => m.kind === 'icon' ? h('span', { title: m.m }, icon(m.m)) : m.kind === 'dot' ? h('span', { class: 'dotx ' + (m.tone || ''), title: 'CSS-точка' }) : glyph(m.m);
+
+// ── сравнение ─────────────────────────────────────────────────────────────────
+const TYPES = {
+  text:          { sev: 'problem', title: 'Изменён текст', why: 'Слова или числа экрана отличаются от оригинала.' },
+  ctrl:          { sev: 'problem', title: 'Изменены кнопки или поля', why: 'Отличается состав элементов управления или их подсказки, значения, состояния.' },
+  'hidden-text': { sev: 'problem', title: 'Текст скрыт стилями', why: 'Текст есть в разметке, но в редизайне его не видно.' },
+  'hidden-ctrl': { sev: 'problem', title: 'Кнопка или поле стали невидимыми', why: '' },
+  trunc:         { sev: 'problem', title: 'Строка обрезана многоточием — скрыто больше четверти', why: 'В оригинале строка видна целиком. По правилу из DESIGN-NOTES.md усечение больше 25% — это уже не усечение, а потеря данных.' },
+  'option-emoji':{ sev: 'problem', title: 'Из пунктов выпадающего списка удалены значки', why: 'Правило 7 в DESIGN-NOTES.md: содержимое <option> не трогаем. Иконку внутрь пункта списка вставить нельзя, поэтому значок просто пропал.' },
+  zwj:           { sev: 'check', title: 'Составное эмодзи разбито на несколько иконок', why: 'Эмодзи из нескольких частей, склеенных невидимым символом U+200D, заменили по частям: вышли две иконки подряд, а невидимая «склейка» осталась в тексте. На Windows оригинал тоже рисуется двумя картинками, так что на глаз разница мала, но по правилу «один смысл — одна иконка» здесь нужна одна.' },
+  orphan:        { sev: 'problem', title: 'В тексте остался невидимый служебный символ', why: 'Обломок эмодзи (U+200D или U+FE0F) без самого эмодзи.' },
+  'trunc-minor': { sev: 'check', title: 'Строка слегка обрезана многоточием', why: 'Скрыт небольшой хвост строки (меньше четверти).' },
+  overload:      { sev: 'check', title: 'Одна иконка на разных по смыслу местах', why: 'На одном экране одной иконкой обозначены разные вещи — это против правила «один смысл — одна иконка».' },
+  kept:          { sev: 'check', title: 'Символ остался текстом, хотя в других местах стал иконкой', why: 'Непоследовательно: тот же символ на остальных экранах заменён SVG-иконкой.' },
+  removed:       { sev: 'check', title: 'Значок убран без замены', why: 'Смысл передаёт текст, но значок исчез. Возможно, так задумано (в референсе кнопки без иконок).' },
+  added:         { sev: 'check', title: 'Добавлен значок, которого не было в оригинале', why: '' },
+  mismatch:      { sev: 'check', title: 'Значки заменены не один к одному', why: 'Число значков до и после разное.' },
+  changed:       { sev: 'check', title: 'Символ заменён другим символом', why: '' },
+  glue:          { sev: 'info', title: 'Исправлена склейка заголовка и подписи', why: 'В оригинале заголовок и подпись строки шли подряд без пробела («Крышка-1223.07.2026»). В редизайне это две раздельные строки — так и должно быть.' },
+  'trunc-fixed': { sev: 'info', title: 'Обрезка из оригинала устранена', why: '' },
+};
+const SEV_ORDER = { problem: 0, check: 1, info: 2 };
+const SYN = [['📅', '📆', '🗓'], ['🔍', '🔎', '⌕'], ['✅', '✓', '☑', '✔'], ['⏳', '⌛'], ['🔄', '🔁'], ['⭐', '★'], ['🏆', '🥇'], ['✏', '📝'], ['📷', '📸'], ['📜', '📄', '📃']];
+const synOf = (g) => { const i = SYN.findIndex((s) => s.includes(g)); return i < 0 ? g : 'syn' + i; };
+// Разные эмодзи под одной иконкой, которые на своих экранах значат одно и то же (проверено вручную):
+// «Excel/Word/CSV» → скачать, «Состояние системы/Живость» → пульс, «Связь по сырью/Складу сырья» → колба и т.п.
+const SAME_MEANING = { 'i-message': ['💬', '📋'], 'i-box': ['📦', '📊', '🧊', '⇄'], 'i-download': ['📊', '📄', '📁', '🗄', '🚚'], 'i-flask': ['🏭', '🧪', '➕', '⬡', '🧬'], 'i-inbox': ['📥', '📨'], 'i-pulse': ['🩺', '🫀', '⚙', '📊'] };
+const plural = (n, f) => { const a = Math.abs(n) % 100, b = a % 10; return n + ' ' + (a > 10 && a < 20 ? f[2] : b > 1 && b < 5 ? f[1] : b === 1 ? f[0] : f[2]); };
+
+const PO = $$('.phone', dO), PR = $$('.phone', dR);
+const cs = (e) => e.ownerDocument.defaultView.getComputedStyle(e);
+const isVis = (e) => { if (!e || !e.getClientRects().length) return false; const s = cs(e); return s.visibility !== 'hidden' && +s.opacity !== 0; };
+const skip = (n) => !!(n.nodeType === 3 ? n.parentElement : n)?.closest('svg,style,script');
+const domWords = (scr) => { const w = scr.ownerDocument.createTreeWalker(scr, NodeFilter.SHOW_TEXT); const p = []; let n; while ((n = w.nextNode())) if (!skip(n)) p.push(n.nodeValue); return txtNorm(p.join(' ')).split(' ').filter(Boolean); };
+const sig = (el) => { const tag = el.tagName.toLowerCase(); const p = [tag]; for (const a of ['type', 'name', 'placeholder', 'value', 'aria-label', 'min', 'max', 'step', 'href', 'src']) { const v = el.getAttribute(a); if (v !== null) p.push(a + '=' + txtNorm(v)); } for (const a of ['disabled', 'checked', 'selected', 'readonly', 'required', 'multiple']) if (el.hasAttribute(a)) p.push(a); if (['button', 'option', 'a', 'label', 'textarea'].includes(tag)) p.push('«' + txtNorm(el.textContent) + '»'); return p.join(' · '); };
+const ctrlEls = (scr) => $$('button,input,select,textarea,option,a,label,img', scr).filter((e) => !e.closest('svg'));
+const host = (n, scr) => { let e = n.parentElement; while (e && e !== scr && !keyNorm(e.textContent)) e = e.parentElement; return e || scr; };
+const hkey = (e) => e.tagName + '|' + keyNorm(e.textContent);
+const findByKey = (scr, key) => { const tag = key.split('|')[0]; let best = null; for (const e of scr.getElementsByTagName(tag)) if (hkey(e) === key) { best = e; break; } return best; };
+const findByText = (scr, t) => { let best = null; for (const e of scr.querySelectorAll('*')) { if (e.closest('svg')) continue; if (txtNorm(e.textContent) === t && (!best || best.contains(e))) best = e; } return best; };
+const marksOf = (scr) => {
+  const res = []; const w = scr.ownerDocument.createTreeWalker(scr, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT); let n;
+  while ((n = w.nextNode())) {
+    if (n.nodeType === 1) {
+      const tag = n.tagName.toLowerCase();
+      if (tag === 'svg') { if (!isVis(n)) continue; const u = n.querySelector('use'); const id = u ? (u.getAttribute('href') || u.getAttribute('xlink:href') || '').replace(/^#/, '') : 'svg'; res.push({ kind: 'icon', m: id, el: n, h: host(n, scr) }); }
+      else if (n.classList && n.classList.contains('dot') && !n.closest('svg')) { if (!isVis(n)) continue; res.push({ kind: 'dot', m: 'dot', tone: [...n.classList].filter((c) => c !== 'dot').join(' '), el: n, h: host(n, scr) }); }
+      continue;
+    }
+    if (skip(n)) continue;
+    const pe = n.parentElement; if (!pe.closest('option') && !isVis(pe)) continue;
+    const v = n.nodeValue; let g = v.match(GL) || []; if (v.trim() === '?') g = ['?'];
+    for (const x of g) res.push({ kind: 'glyph', m: x.replace(/️/g, ''), el: pe, h: host(n, scr) });
+  }
+  return res;
+};
+const truncOf = (scr) => {
+  const all = [];
+  for (const e of scr.querySelectorAll('*')) {
+    if (e.closest('svg') || ['SELECT', 'TEXTAREA', 'PRE', 'INPUT', 'OPTION'].includes(e.tagName)) continue;
+    if (!e.getClientRects().length) continue;
+    const s = cs(e); if (s.overflowX === 'auto' || s.overflowX === 'scroll') continue;
+    if (s.overflowX === 'visible' && s.textOverflow !== 'ellipsis') continue;
+    if (e.clientWidth > 0 && e.scrollWidth > e.clientWidth + 2) { const t = txtNorm(e.textContent); if (t) all.push({ el: e, t, lost: 1 - e.clientWidth / e.scrollWidth }); }
+  }
+  return all.filter((x) => !all.some((y) => y !== x && x.el.contains(y.el)));
+};
+const groupBy = (arr) => { const g = new Map(); for (const x of arr) { const k = hkey(x.h); if (!g.has(k)) g.set(k, []); g.get(k).push(x); } return g; };
+
+const SCREENS = [];
+const globalIcon = new Map(); // глиф → сколько раз стал иконкой
+const globalMap = new Map();  // глиф → Map(иконка → Set(экранов))
+PO.forEach((po, k) => {
+  const pr = PR[k], so = po.querySelector('.scr'), sr = pr.querySelector('.scr');
+  const capSpan = [...po.querySelectorAll('.cap span')].find((s) => !s.classList.contains('cap-rid'));
+  const S = { k, phO: po, phR: pr, so, sr, items: [], pairs: [],
+    sec: txtNorm(po.closest('.section')?.querySelector('.section-title')?.textContent),
+    name: (capSpan ? capSpan.textContent : po.querySelector('.cap')?.textContent || '').replace(/\s*—\s*$/, '').trim(),
+    rid: po.querySelector('.cap-rid')?.textContent.trim() || '' };
+  const add = (type, data) => S.items.push(Object.assign({ type, sev: TYPES[type].sev }, data));
+
+  // 1. текст
+  const th = lcs(domWords(so), domWords(sr));
+  if (th.length) add('text', { hunks: th, marks: [] });
+  // 2. элементы управления
+  const co = ctrlEls(so), cr = ctrlEls(sr);
+  const cd = msDiff(co.map(sig), cr.map(sig));
+  if (cd.rem.length || cd.add.length) add('ctrl', { rem: cd.rem, add: cd.add, marks: [] });
+  // 3. скрытые контролы
+  co.forEach((e, i) => { const r = cr[i]; if (r && isVis(e) && !isVis(r) && !e.closest('option')) add('hidden-ctrl', { label: short(e.textContent || e.getAttribute('aria-label') || e.placeholder), marks: [{ side: 'o', el: e }] }); });
+  // 4. видимый текст
+  const vO = txtNorm(so.innerText).split(' ').filter(Boolean), vR = txtNorm(sr.innerText).split(' ').filter(Boolean);
+  const vd = msDiff(vO.map((x) => x.toLowerCase()), vR.map((x) => x.toLowerCase()));
+  if (vd.rem.length || vd.add.length) {
+    const chars = (a) => [...a.join('')].sort().join('');
+    if (chars(vd.rem) === chars(vd.add)) {
+      const ex = []; const lowR = vR.map((x) => x.toLowerCase());
+      for (const tok of [...new Set(vd.rem)]) { for (let i = 0; i < lowR.length && ex.length < 40; i++) { let acc = ''; for (let j = i; j < Math.min(i + 5, lowR.length); j++) { acc += lowR[j]; if (acc === tok && j > i) { ex.push([vO.find((x) => x.toLowerCase() === tok) || tok, vR.slice(i, j + 1)]); i = lowR.length; break; } if (!tok.startsWith(acc)) break; } } }
+      add('glue', { ex, count: new Set(vd.rem).size, marks: [] });
+    } else add('hidden-text', { rem: vd.rem, add: vd.add, marks: [] });
+  }
+  // 5. обрезка многоточием
+  const tO = truncOf(so), tR = truncOf(sr), tOs = new Set(tO.map((x) => x.t)), tRs = new Set(tR.map((x) => x.t));
+  S.truncO = tO.length; S.truncR = tR.length;
+  for (const x of tR) if (!tOs.has(x.t) && x.lost >= 0.03) add(x.lost >= 0.25 ? 'trunc' : 'trunc-minor', { t: x.t, lost: x.lost, marks: [{ side: 'r', el: x.el }, { side: 'o', el: findByText(so, x.t) }] });
+  const fixed = tO.filter((x) => !tRs.has(x.t)); if (fixed.length) add('trunc-fixed', { list: fixed.map((x) => x.t), marks: [] });
+
+  // 6. значки
+  const go = groupBy(marksOf(so)), gr = groupBy(marksOf(sr));
+  const optGroups = new Map();
+  for (const [key, a] of go) {
+    const b = gr.get(key) || [];
+    if (a.length === b.length) { a.forEach((x, i) => S.pairs.push({ x, y: b[i] })); continue; }
+    const hostO = a[0].h, hostR = b[0]?.h || findByKey(sr, key);
+    const sel = hostO.closest('select');
+    if (!b.length && sel) { const idx = $$('select', so).indexOf(sel); if (!optGroups.has(sel)) optGroups.set(sel, { selO: sel, selR: $$('select', sr)[idx], glyphs: [] }); optGroups.get(sel).glyphs.push(...a.map((x) => x.m)); continue; }
+    if (!b.length) { add('removed', { a, label: short(hostO.textContent), marks: [{ side: 'o', el: hostO }, { side: 'r', el: hostR }] }); continue; }
+    const isZwj = a.some((x) => x.m.includes('‍'));
+    add(isZwj ? 'zwj' : 'mismatch', { a, b, label: short(hostO.textContent), marks: [{ side: 'o', el: hostO }, { side: 'r', el: hostR }] });
+  }
+  for (const g of optGroups.values()) add('option-emoji', { selO: g.selO, selR: g.selR, marks: [{ side: 'o', el: g.selO }, { side: 'r', el: g.selR }] });
+  for (const [key, b] of gr) if (!go.has(key)) add('added', { b, label: short(b[0].h.textContent), marks: [{ side: 'r', el: b[0].h }, { side: 'o', el: findByKey(so, key) }] });
+  // обломки ZWJ / VS16
+  { const w = dR.createTreeWalker(sr, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { const v = n.nodeValue; if (/[‍️]/.test(v) && !/\p{Extended_Pictographic}/u.test(v)) { const hst = host(n, sr); const z = S.items.find((it) => it.type === 'zwj' && it.marks[1]?.el === hst); if (z) z.orphan = true; else add('orphan', { label: short(hst.textContent), marks: [{ side: 'r', el: hst }] }); } } }
+  // перегруз иконки на экране
+  const byIcon = new Map();
+  for (const { x, y } of S.pairs) if (x.kind === 'glyph' && y.kind === 'icon') { if (!byIcon.has(y.m)) byIcon.set(y.m, []); byIcon.get(y.m).push({ x, y }); }
+  for (const [id, list] of byIcon) { const groups = new Set(list.map((p) => synOf(p.x.m))); const ok = SAME_MEANING[id] && list.every((p) => SAME_MEANING[id].includes(p.x.m)); if (groups.size >= 2 && !ok) add('overload', { id, list, marks: list.flatMap((p) => [{ side: 'r', el: p.y.h }, { side: 'o', el: p.x.h }]) }); }
+  for (const { x, y } of S.pairs) if (x.kind === 'glyph' && y.kind === 'icon') { globalIcon.set(x.m, (globalIcon.get(x.m) || 0) + 1); if (!globalMap.has(x.m)) globalMap.set(x.m, new Map()); const mm = globalMap.get(x.m); if (!mm.has(y.m)) mm.set(y.m, new Set()); mm.get(y.m).add(k); }
+  for (const { x, y } of S.pairs) if (x.kind === 'glyph' && y.kind === 'glyph' && x.m !== y.m) add('changed', { x, y, label: short(x.h.textContent), marks: [{ side: 'o', el: x.h }, { side: 'r', el: y.h }] });
+  SCREENS.push(S);
+});
+// символы, оставшиеся текстом, хотя в других местах стали иконкой
+SCREENS.forEach((S) => {
+  const kept = new Map();
+  for (const { x, y } of S.pairs) if (x.kind === 'glyph' && y.kind === 'glyph' && x.m === y.m && (globalIcon.get(x.m) || 0) >= 2) { if (!kept.has(x.m)) kept.set(x.m, []); kept.get(x.m).push({ x, y }); }
+  for (const [g, list] of kept) { const ic = [...(globalMap.get(g) || new Map())].sort((a, b) => b[1].size - a[1].size)[0]; S.items.push({ type: 'kept', sev: 'check', g, list, iconId: ic ? ic[0] : null, times: globalIcon.get(g), marks: list.flatMap((p) => [{ side: 'r', el: p.y.h }, { side: 'o', el: p.x.h }]) }); }
+  S.items.sort((a, b) => SEV_ORDER[a.sev] - SEV_ORDER[b.sev]);
+  S.nP = S.items.filter((i) => i.sev === 'problem').length;
+  S.nC = S.items.filter((i) => i.sev === 'check').length;
+  S.status = S.nP ? 'problem' : S.nC ? 'check' : 'ok';
+});
+
+// вне экранов
+const secTitles = (d) => $$('.section', d).map((s) => txtNorm(s.querySelector('.section-title')?.textContent));
+const extraSections = secTitles(dR).filter((t) => !secTitles(dO).includes(t));
+const outsideCtl = (d) => $$('button,input,select,textarea,label', d).filter((e) => !e.closest('.phone')).map((e) => (e.tagName === 'LABEL' ? 'переключатель «' + txtNorm(e.textContent) + '»' : null)).filter(Boolean);
+const extraCtl = outsideCtl(dR).filter((t) => !outsideCtl(dO).includes(t));
+const h1O = txtNorm($('h1', dO)?.textContent), h1R = txtNorm($('h1', dR)?.textContent);
+const notesFacts = {
+  icons: dR.body.querySelectorAll(':scope > svg g[id^="i-"], :scope > svg symbol[id^="i-"]').length,
+  spanE: dR.querySelectorAll('span.e').length,
+  keep: dR.querySelectorAll('.keep').length,
+  gutter: getComputedStyle(fR).width && dR.defaultView.getComputedStyle(dR.documentElement).getPropertyValue('--gutter').trim(),
+};
+
+// ── режим «один экран» ────────────────────────────────────────────────────────
+const SINGLE_CSS = `
+html,body{background:transparent!important;margin:0!important;padding:0!important;overflow:hidden!important;min-width:0!important;min-height:0!important;height:auto!important}
+[data-x-hide]{display:none!important}
+[data-x-anc]{margin:0!important;padding:0!important;gap:0!important;border:0!important;background:transparent!important;box-shadow:none!important;min-height:0!important;max-width:none!important;width:auto!important;display:block!important;outline:0!important}
+.phone[data-x-on]{margin:4px!important;width:320px!important;max-width:320px!important;flex:none!important}
+.phone[data-x-on] > .cap{display:none!important}
+.x-mk{position:absolute;border:2px solid var(--x-c);border-radius:7px;pointer-events:none;z-index:2147483647;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.x-mk > b{position:absolute;left:-7px;top:-9px;min-width:20px;height:20px;border-radius:10px;background:var(--x-c);color:#fff;font:700 11px/20px system-ui,sans-serif;text-align:center;padding:0 5px;box-shadow:0 0 0 2px #fff}
+.x-mk.x-flash{animation:xf .5s ease-in-out 3}
+@keyframes xf{50%{box-shadow:0 0 0 7px var(--x-c)}}`;
+for (const d of [dO, dR]) { const st = d.createElement('style'); st.textContent = SINGLE_CSS; d.head.appendChild(st); }
+fO.classList.remove('analyzing'); fR.classList.remove('analyzing');
+
+function isolate(doc, phone) {
+  for (const e of $$('[data-x-hide],[data-x-anc],[data-x-on]', doc)) { e.removeAttribute('data-x-hide'); e.removeAttribute('data-x-anc'); e.removeAttribute('data-x-on'); }
+  phone.setAttribute('data-x-on', '');
+  for (let e = phone; e.parentElement && e.parentElement !== doc.documentElement; e = e.parentElement) {
+    const p = e.parentElement;
+    for (const s of p.children) {
+      if (s === e || ['STYLE', 'SCRIPT', 'LINK'].includes(s.tagName) || s.id === 'x-marks') continue;
+      if (s.tagName.toLowerCase() === 'svg' && s.querySelector('defs')) continue;
+      s.setAttribute('data-x-hide', '');
+    }
+    if (p !== doc.body) p.setAttribute('data-x-anc', '');
+  }
+}
+function fit(f, doc) { const ph = $('[data-x-on]', doc); if (!ph) return; const r = ph.getBoundingClientRect(); f.style.height = Math.ceil(r.bottom + 6) + 'px'; }
+function drawMarks(S) {
+  const cont = {};
+  for (const [side, doc] of [['o', dO], ['r', dR]]) { $('#x-marks', doc)?.remove(); const c = doc.createElement('div'); c.id = 'x-marks'; c.style.cssText = 'position:absolute;left:0;top:0;width:0;height:0'; doc.body.appendChild(c); cont[side] = c; }
+  for (const it of S.items) {
+    if (!it.no) continue;
+    for (const m of it.marks || []) {
+      const el = m.el; if (!el || !el.isConnected || !el.getClientRects().length) continue;
+      const r = el.getBoundingClientRect(); const doc = el.ownerDocument;
+      const b = doc.createElement('div'); b.className = 'x-mk'; b.dataset.no = it.no;
+      b.style.cssText = `left:${r.left - 3}px;top:${r.top - 3}px;width:${r.width + 6}px;height:${r.height + 6}px;--x-c:${it.sev === 'problem' ? '#d12b22' : '#d97706'}`;
+      const t = doc.createElement('b'); t.textContent = it.no; b.appendChild(t); cont[m.side].appendChild(b);
+    }
+  }
+}
+const flash = (no) => { for (const d of [dO, dR]) for (const b of $$(`.x-mk[data-no="${no}"]`, d)) { b.classList.remove('x-flash'); void b.offsetWidth; b.classList.add('x-flash'); } };
+
+// ── отрисовка пункта ──────────────────────────────────────────────────────────
+const ba = (before, after) => h('div', { class: 'ba' }, h('span', {}, 'Было'), h('span', {}, before), h('span', {}, 'Стало'), h('span', {}, after));
+const marksRow = (arr) => h('span', {}, arr.map((m, i) => [i ? ' ' : '', markView(m)]));
+function itemBody(it) {
+  const T = TYPES[it.type];
+  switch (it.type) {
+    case 'trunc': case 'trunc-minor': {
+      const keep = Math.max(1, Math.round(it.t.length * (1 - it.lost)));
+      return [h('div', { class: 'dt' }, 'Обрезано примерно ' + Math.round(it.lost * 100) + '% строки'),
+        h('div', { class: 'dd' }, h('span', { class: 'q' }, '«' + it.t.slice(0, keep)), h('span', { class: 'cut' }, it.t.slice(keep)), h('span', { class: 'q' }, '»'), h('br'), 'Зачёркнута часть, которая не помещается и уходит под многоточие. В оригинале строка видна целиком.')];
+    }
+    case 'option-emoji':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, ba([...it.selO.options].map((o) => o.textContent).join(' · '), it.selR ? [...it.selR.options].map((o) => o.textContent).join(' · ') : '—'), T.why)];
+    case 'zwj':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, ba(h('span', {}, marksRow(it.a), ' (одно эмодзи)'), h('span', {}, marksRow(it.b), ' — ' + it.b.length + ' иконки' + (it.orphan ? ' + невидимый символ U+200D между ними' : ''))), '«' + it.label + '». Должна быть одна иконка.')];
+    case 'orphan':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, '«' + it.label + '». ' + T.why)];
+    case 'overload':
+      return [h('div', { class: 'dt' }, 'Одна иконка ', icon(it.id), ' ', h('code', {}, it.id), ' на разных смыслах'), h('div', { class: 'dd' }, h('div', {}, it.list.map((p) => h('div', {}, glyph(p.x.m), ' «' + short(p.x.h.textContent, 50) + '» → ', icon(it.id)))), T.why)];
+    case 'kept':
+      return [h('div', { class: 'dt' }, 'Символ ', glyph(it.g), ' остался текстом (' + it.list.length + ')'), h('div', { class: 'dd' }, 'На других местах этот символ заменён иконкой (' + plural(it.times, ['раз', 'раза', 'раз']) + ') ', it.iconId ? icon(it.iconId) : '', it.iconId ? h('code', {}, it.iconId) : '', '. Здесь: ' + it.list.map((p) => '«' + short(p.x.h.textContent, 40) + '»').join(', '))];
+    case 'removed':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, ba(h('span', {}, marksRow(it.a), ' ' + it.label), it.label), T.why)];
+    case 'added':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, ba(it.label + ' (без значка)', h('span', {}, marksRow(it.b), ' ' + it.label)))];
+    case 'mismatch':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, ba(h('span', {}, marksRow(it.a)), h('span', {}, marksRow(it.b))), '«' + it.label + '»')];
+    case 'changed':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, ba(glyph(it.x.m), glyph(it.y.m)), '«' + it.label + '»')];
+    case 'text':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, it.hunks.slice(0, 8).map((x) => ba(x.del.join(' ') || '—', x.add.join(' ') || '—')))];
+    case 'ctrl':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, it.rem.slice(0, 6).map((x) => h('div', {}, '− ' + x)), it.add.slice(0, 6).map((x) => h('div', {}, '+ ' + x)))];
+    case 'hidden-text':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, 'Не видно: ' + it.rem.join(', ') + (it.add.length ? ' · Появилось: ' + it.add.join(', ') : ''))];
+    case 'hidden-ctrl':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, '«' + it.label + '»')];
+    case 'glue':
+      return [h('div', { class: 'dt' }, T.title + ' (' + it.count + ')'), h('div', { class: 'dd' }, it.ex.slice(0, 4).map(([a, b]) => ba('«' + a + '»', b.map((x) => '«' + x + '»').join(' + '))), T.why)];
+    case 'trunc-fixed':
+      return [h('div', { class: 'dt' }, T.title), h('div', { class: 'dd' }, it.list.map((t) => '«' + short(t, 60) + '»').join(', '))];
+  }
+  return [h('div', { class: 'dt' }, T.title)];
+}
+function replacements(S) {
+  const agg = new Map();
+  for (const { x, y } of S.pairs) {
+    if (x.kind !== 'glyph') continue;
+    const cat = y.kind === 'icon' ? 'icon' : y.kind === 'dot' ? 'dot' : (x.m === y.m ? 'kept' : null); if (!cat) continue;
+    const key = cat + '|' + x.m + '|' + y.m + '|' + (y.tone || '');
+    if (!agg.has(key)) agg.set(key, { cat, x, y, n: 0 }); agg.get(key).n++;
+  }
+  const rows = [...agg.values()];
+  const block = (cat, title) => { const r = rows.filter((x) => x.cat === cat); if (!r.length) return null; return h('div', { class: 'dsec sev-info' }, h('h3', {}, title + ' · ' + r.reduce((s, x) => s + x.n, 0)), h('div', { class: 'reps' }, r.map((x) => h('div', { class: 'rep' }, glyph(x.x.m), h('span', { class: 'arr' }, '→'), markView(x.y), x.y.kind === 'icon' ? h('code', {}, x.y.m.replace(/^i-/, '')) : null, h('span', { class: 'cnt' }, '×' + x.n))))); };
+  return [block('icon', 'Эмодзи заменены иконками (по замыслу)'), block('dot', 'Цветные кружки стали CSS-точками (по замыслу)'), block('kept', 'Оставлены как были')];
+}
+function renderDiffs(S) {
+  const box = $('#diffs'); box.innerHTML = ''; let no = 0;
+  for (const it of S.items) it.no = (it.sev !== 'info' && it.marks && it.marks.some((m) => m.el)) ? ++no : 0;
+  const sections = [['problem', 'Проблемы'], ['check', 'Проверить'], ['info', 'Изменения по замыслу']];
+  if (!S.nP && !S.nC) box.append(h('div', { class: 'empty dsec' }, '✓ Содержание экрана совпадает с оригиналом: текст, кнопки и поля те же. Отличается только оформление.'));
+  for (const [sev, title] of sections) {
+    const list = S.items.filter((i) => i.sev === sev); if (!list.length) continue;
+    box.append(h('div', { class: 'dsec sev-' + sev }, h('h3', {}, title, h('span', { class: 'badge ' + (sev === 'problem' ? 'b-p' : sev === 'check' ? 'b-c' : 'b-ok') }, list.length)),
+      list.map((it) => h('div', { class: 'd', onmouseenter: () => it.no && flash(it.no), onclick: () => it.no && flash(it.no) }, h('span', { class: 'mk' + (it.no ? '' : ' none') }, it.no || ''), h('div', {}, itemBody(it))))));
+  }
+  box.append(...replacements(S).filter(Boolean));
+}
+
+// ── навигация ─────────────────────────────────────────────────────────────────
+let filter = 'all', cur = -1;
+const COUNTS = { all: SCREENS.length, problem: SCREENS.filter((s) => s.status === 'problem').length, check: SCREENS.filter((s) => s.status === 'check').length, ok: SCREENS.filter((s) => s.status === 'ok').length };
+function renderFilters() {
+  const f = $('#filters'); f.innerHTML = '';
+  for (const [k, label] of [['all', 'Все'], ['problem', 'Проблемы'], ['check', 'Проверить'], ['ok', 'Без замечаний']]) f.append(h('button', { class: 'chip', 'aria-pressed': String(filter === k), onclick: () => { filter = k; renderFilters(); renderList(); } }, label, h('i', {}, COUNTS[k])));
+}
+function renderList() {
+  const list = $('#list'); list.innerHTML = ''; const q = $('#q').value.trim().toLowerCase(); let sec = null;
+  SCREENS.forEach((S) => {
+    if (filter !== 'all' && S.status !== filter) return;
+    if (q && !(String(S.k + 1) === q || (S.name + ' ' + S.rid + ' ' + S.sec).toLowerCase().includes(q))) return;
+    if (S.sec !== sec) { sec = S.sec; list.append(h('div', { class: 'grp' }, sec)); }
+    const badge = S.nP ? h('span', { class: 'badge b-p', title: 'проблем' }, S.nP) : S.nC ? h('span', { class: 'badge b-c', title: 'проверить' }, S.nC) : h('span', { class: 'badge b-ok', title: 'без замечаний' }, '✓');
+    list.append(h('button', { class: 'it', 'aria-current': String(S.k === cur), 'data-k': S.k, onclick: () => go(S.k) }, h('span', { class: 'n' }, S.k + 1), h('span', { class: 't' }, S.name), badge));
+  });
+}
+function markCurrent() { for (const b of $$('#list .it')) b.setAttribute('aria-current', String(+b.dataset.k === cur)); $(`#list .it[data-k="${cur}"]`)?.scrollIntoView({ block: 'nearest' }); }
+const scLink = (k, extra) => h('button', { class: 'sc-link', onclick: () => go(k) }, h('b', {}, '№ ' + (k + 1)), ' ' + SCREENS[k].name + (extra ? ' · ' + extra : ''));
+
+function renderSummary() {
+  const s0 = $('#summary'); s0.innerHTML = '';
+  const s = { append: (...k) => s0.append(...k.flat(9).filter((x) => x != null && x !== false)) };
+  const all = SCREENS.flatMap((S) => S.items.map((it) => ({ S, it })));
+  const count = (t) => all.filter((x) => x.it.type === t).length;
+  const pairs = SCREENS.flatMap((S) => S.pairs).filter((p) => p.x.kind === 'glyph');
+  const nIcon = pairs.filter((p) => p.y.kind === 'icon').length, nDot = pairs.filter((p) => p.y.kind === 'dot').length, nKept = pairs.filter((p) => p.y.kind === 'glyph').length;
+  const truncO = SCREENS.reduce((n, S) => n + S.truncO, 0), truncR = SCREENS.reduce((n, S) => n + S.truncR, 0);
+  const stat = (cls, n, label, f) => h('button', { class: 'stat ' + cls, onclick: () => { filter = f; renderFilters(); renderList(); } }, h('b', {}, n), h('span', {}, label));
+  s.append(
+    h('h2', {}, 'Сводка различий'),
+    h('p', { class: 'lead' }, 'Сравнение ', h('code', {}, 'sakp-all-screens-standalone.html'), ' (было) и ', h('code', {}, 'sakp-all-screens-redesign.html'), ' (стало). Экраны пронумерованы по порядку на борде, от 1 до ' + SCREENS.length + '. Слева — список всех экранов: нажмите на экран, чтобы увидеть «было» и «стало» рядом, с отмеченными различиями. Сравнение выполняется при каждом открытии этого файла.'),
+    FONT_OK ? null : h('div', { class: 'warnbox' }, 'Шрифт Inter не загрузился (нет интернета?). Замеры обрезки строк могут отличаться от настоящего вида редизайна.'),
+    h('div', { class: 'stats' }, stat('', SCREENS.length, 'экранов сравнено', 'all'), stat('p', COUNTS.problem, 'с проблемами', 'problem'), stat('c', COUNTS.check, 'есть что проверить', 'check'), stat('ok', COUNTS.ok, 'без замечаний', 'ok')),
+    h('h3', {}, 'Что сверено'),
+    h('div', { class: 'card' }, h('ul', { class: 'checks' },
+      h('li', {}, h('span', { class: PO.length === PR.length ? 'ok-i' : 'bad-i' }, PO.length === PR.length ? '✓' : '✗'), h('span', {}, 'Экраны: ' + PO.length + ' было, ' + PR.length + ' стало. Названия и порядок совпадают.')),
+      h('li', {}, h('span', { class: count('text') ? 'bad-i' : 'ok-i' }, count('text') ? '✗' : '✓'), h('span', {}, count('text') ? 'Текст изменён на ' + count('text') + ' экранах.' : 'Текст: ни одно слово, число, имя или дата не изменились (значки не в счёт, они сверяются отдельно).')),
+      h('li', {}, h('span', { class: count('ctrl') ? 'bad-i' : 'ok-i' }, count('ctrl') ? '✗' : '✓'), h('span', {}, count('ctrl') ? 'Кнопки и поля отличаются на ' + count('ctrl') + ' экранах.' : 'Кнопки и поля: тот же состав, те же подсказки, значения, состояния «недоступно» и подписи для экранного диктора.')),
+      h('li', {}, h('span', { class: count('hidden-text') + count('hidden-ctrl') ? 'bad-i' : 'ok-i' }, count('hidden-text') + count('hidden-ctrl') ? '✗' : '✓'), h('span', {}, count('hidden-text') + count('hidden-ctrl') ? 'Что-то скрыто стилями.' : 'Ничего не спрятано стилями: весь текст и все элементы управления видны.')),
+      h('li', {}, h('span', { class: count('trunc') ? 'bad-i' : 'ok-i' }, count('trunc') ? '✗' : '✓'), h('span', {}, 'Обрезка многоточием: в оригинале ' + plural(truncO, ['строка', 'строки', 'строк']) + ', в редизайне ' + truncR + '. Новых заметных: ' + (count('trunc') + count('trunc-minor')) + ', из них ' + count('trunc') + ' теряют больше четверти текста.')),
+      h('li', {}, h('span', { class: count('option-emoji') + count('zwj') ? 'warn-i' : 'ok-i' }, count('option-emoji') + count('zwj') ? '!' : '✓'), h('span', {}, 'Значки: ' + nIcon + ' эмодзи заменены иконками, цветных кружков, ставших CSS-точками: ' + nDot + ', оставлено как было: ' + nKept + '. Спорных мест: ' + (count('option-emoji') + count('zwj') + count('removed') + count('mismatch') + count('added') + count('overload') + count('kept')) + '.')),
+    )),
+  );
+  for (const [sev, title] of [['problem', 'Проблемы'], ['check', 'Проверить']]) {
+    const types = Object.keys(TYPES).filter((t) => TYPES[t].sev === sev && count(t));
+    if (!types.length) continue;
+    s.append(h('h3', {}, title));
+    for (const t of types) {
+      const per = new Map(); all.filter((x) => x.it.type === t).forEach((x) => per.set(x.S.k, (per.get(x.S.k) || 0) + 1));
+      s.append(h('div', { class: 'card type sev-' + sev }, h('h4', {}, TYPES[t].title, ' ', h('span', { class: 'badge ' + (sev === 'problem' ? 'b-p' : 'b-c') }, count(t))), TYPES[t].why ? h('p', {}, TYPES[t].why) : null, h('div', { class: 'sc-links' }, [...per].map(([k, n]) => scLink(k, n > 1 ? '×' + n : '')))));
+    }
+  }
+  s.append(h('h3', {}, 'Добавлено вне экранов'),
+    h('div', { class: 'card' }, h('ul', { class: 'checks' },
+      extraSections.map((t) => h('li', {}, h('span', { class: 'ok-i' }, '+'), h('span', {}, 'Раздел «' + t + '» — легенда иконок. Экранов в нём нет, описан в DESIGN-NOTES.md.'))),
+      extraCtl.map((t) => h('li', {}, h('span', { class: 'ok-i' }, '+'), h('span', {}, 'Переключатель темы борда: ' + t + '. Описан в DESIGN-NOTES.md.'))),
+      h1O !== h1R ? h('li', {}, h('span', { class: 'ok-i' }, '~'), h('span', {}, 'Заголовок борда: «' + h1O + '» → «' + h1R + '». Это подпись самого борда, не экран приложения.')) : null)));
+  s.append(h('h3', {}, 'Расхождения в DESIGN-NOTES.md'),
+    h('div', { class: 'card' }, h('ul', { class: 'checks' },
+      h('li', {}, h('span', { class: 'warn-i' }, '!'), h('span', {}, 'Раздел «Иконки»: «Единый SVG-сет: 61 символ». В файле ' + notesFacts.icons + ' символов — столько же указано в легенде иконок.')),
+      h('li', {}, h('span', { class: 'warn-i' }, '!'), h('span', {}, 'Правило 7 описывает эмодзи, обёрнутые в span.e, и 105 элементов с классом keep. В файле span.e: ' + notesFacts.spanE + ', keep: ' + notesFacts.keep + ' — эмодзи почти все заменены иконками, правило устарело.')),
+      h('li', {}, h('span', { class: 'warn-i' }, '!'), h('span', {}, 'Поле страницы: в таблице «Поля рамки телефона» — 8px, в разделе «Статус» — 16px. В файле --gutter: ' + (notesFacts.gutter || '?') + '.')))));
+  const multi = [...globalMap].filter(([g, m]) => m.size > 1).sort((a, b) => b[1].size - a[1].size);
+  if (multi.length) s.append(h('h3', {}, 'К сведению: один и тот же эмодзи стал разными иконками'),
+    h('p', { class: 'lead' }, 'Чаще всего это правильно: иконку подбирали по смыслу кнопки, а не по исходному эмодзи (например, «🚚 Отчёт по отгрузкам (Excel)» получил иконку скачивания). Таблица — чтобы было где проверить.'),
+    h('div', { class: 'card' }, h('table', { class: 'map' }, multi.map(([g, m]) => h('tr', {}, h('td', {}, g), h('td', {}, [...m].map(([id, ks]) => h('div', { style: 'margin:2px 0' }, icon(id), ' ', h('code', {}, id), ' ', [...ks].slice(0, 8).map((k) => [' ', scLink(k)])))))))));
+}
+
+function go(k) { location.hash = '#' + (k + 1); }
+function route() {
+  const m = location.hash.match(/^#(\d+)$/);
+  if (m && +m[1] >= 1 && +m[1] <= SCREENS.length) showScreen(+m[1] - 1); else showSummary();
+}
+function showSummary() { cur = -1; $('#screen').hidden = true; $('#summary').hidden = false; markCurrent(); $('#main').scrollTop = 0; }
+function showScreen(k) {
+  cur = k; const S = SCREENS[k];
+  $('#summary').hidden = true; $('#screen').hidden = false;
+  isolate(dO, S.phO); isolate(dR, S.phR);
+  $('#s-num').textContent = '№ ' + (k + 1); $('#s-name').textContent = S.name; $('#s-sec').textContent = S.sec; $('#s-rid').textContent = S.rid; $('#s-of').textContent = 'экран ' + (k + 1) + ' из ' + SCREENS.length;
+  $('#prev').disabled = k === 0; $('#next').disabled = k === SCREENS.length - 1;
+  renderDiffs(S);
+  fit(fO, dO); fit(fR, dR); drawMarks(S);
+  requestAnimationFrame(() => { fit(fO, dO); fit(fR, dR); drawMarks(S); });
+  markCurrent(); $('#main').scrollTop = 0; window.scrollTo(0, 0);
+}
+$('#prev').onclick = () => cur > 0 && go(cur - 1);
+$('#next').onclick = () => cur < SCREENS.length - 1 && go(cur + 1);
+$('#to-summary').onclick = () => { location.hash = '#summary'; };
+$('#q').oninput = renderList;
+$('#dark').onchange = () => { const on = $('#dark').checked; dR.body.classList.toggle('theme-dark', on); const t = dR.getElementById('theme-toggle'); if (t) t.checked = on; if (cur >= 0) { fit(fR, dR); drawMarks(SCREENS[cur]); requestAnimationFrame(() => { fit(fR, dR); drawMarks(SCREENS[cur]); }); } };
+document.addEventListener('keydown', (e) => { if (e.target.closest('input')) return; if (e.key === 'ArrowRight' && cur < SCREENS.length - 1) go(cur + 1); if (e.key === 'ArrowLeft' && cur > 0) go(cur - 1); });
+window.addEventListener('hashchange', route);
+
+renderFilters(); renderList(); renderSummary(); route();
+$('#loading').remove();
+window.__SCREENS = SCREENS;
+})().catch((e) => { document.getElementById('loading').innerHTML = '<div><b>Не удалось построить сравнение</b>' + String(e && e.stack || e).replace(/</g, '&lt;') + '</div>'; console.error(e); });
+</script>
+</body>
+</html>
